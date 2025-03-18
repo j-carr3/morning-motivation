@@ -26,8 +26,10 @@ jobs:
         run: |
           rsync -avz --delete ./ ${{ secrets.USER }}@${{ secrets.DROPLET_IP }}:/home/${{ secrets.USER }}/morning-motivation
 
-      - name: Restart Application
+      - name: Restart Application Using Docker Compose
         run: |
-          ssh -o StrictHostKeyChecking=no -T ${{ secrets.USER }}@${{ secrets.DROPLET_IP }} "
-            cd /home/${{ secrets.USER }}/app && pm2 restart all || pm2 start npm -- start
-          "
+            ssh -o StrictHostKeyChecking=no -T ${{ secrets.USER }}@${{ secrets.DROPLET_IP }} "
+              cd /home/${{ secrets.USER }}/morning-motivation && \
+              docker-compose down && \
+              docker-compose up -d --build
+            "
