@@ -1,0 +1,30 @@
+name: Deploy to DigitalOcean
+
+on:
+  push:
+    branches:
+      - main  # Change this if your branch name differs
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh/
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H 159.89.237.253 >> ~/.ssh/known_hosts
+
+      - name: Deploy via SSH
+        run: |
+          ssh johnny@159.89.237.253 << 'EOF'
+            cd /morning-motivation
+            git pull origin main
+            docker-compose down
+            docker-compose up --build -d
+          EOF
