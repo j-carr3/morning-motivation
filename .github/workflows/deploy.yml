@@ -28,7 +28,6 @@ jobs:
 
       - name: Restart Application
         run: |
-          ssh ${{ secrets.USER }}@${{ secrets.DROPLET_IP }} << 'EOF'
-            cd /home/${{ secrets.USER }}/morning-motivation
-            pm2 restart all || pm2 start npm -- start
-          EOF
+          ssh -o StrictHostKeyChecking=no -T ${{ secrets.USER }}@${{ secrets.DROPLET_IP }} "
+            cd /home/${{ secrets.USER }}/app && pm2 restart all || pm2 start npm -- start
+          "
