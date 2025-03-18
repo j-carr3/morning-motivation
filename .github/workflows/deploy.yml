@@ -3,28 +3,33 @@ name: Deploy to DigitalOcean
 on:
   push:
     branches:
-      - main  # Change this if your branch name differs
+      - main  # Change this to your desired branch
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup SSH Key
+      - name: Deploy to Droplet
+        env:
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          DROPLET_IP: ${{ secrets.DROPLET_IP }}
+          USER: ${{ secrets.USER }}
         run: |
+          # Create SSH key for authentication
           mkdir -p ~/.ssh/
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          echo "$SSH_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H 159.89.237.253 >> ~/.ssh/known_hosts
 
-      - name: Deploy via SSH
-        run: |
-          ssh johnny@159.89.237.253 << 'EOF'
-            cd /morning-motivation
-            git pull origin main
+          # Transfer files securely with rsync (avoids terminal needs)
+          rsync -avz --delete . $USER@$DROPLET_IP:/home/$USER/app
+
+          # Execute remote deployment commands
+          ssh -o StrictHostKeyChecking=no $USER@$DROPLET_IP << 'EOF'
+            cd /home/$USER/app
             docker-compose down
-            docker-compose up --build -d
+            docker-compose up -d --build
           EOF
