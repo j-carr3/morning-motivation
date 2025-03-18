@@ -27,4 +27,4 @@ const setDailyQuote = () => {
 };
 
 // Schedule the cron job to run at 6 AM every day
-cron.schedule('0 6 * * *', setDailyQuote); // At 6 AM every day
+cron.schedule('* * * * *', setDailyQuote); // At 6 AM every day
