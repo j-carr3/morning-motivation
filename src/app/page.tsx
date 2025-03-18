@@ -5,10 +5,10 @@ export default function Home() {
     <div className={styles.page}>
       <main className={styles.main}>
         <h1 >
-          Keep on keepin on 
+          Welcome to my world, won&apos;t you come on in? 
         </h1>
         <div>
-          Welcome to my world, won&apos;t you come on in?
+          Life is not about finding yourself. Life is about creating yourself.
         </div>
       </main>
     </div>
